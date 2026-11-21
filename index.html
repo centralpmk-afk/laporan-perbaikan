@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Laporan Perbaikan Bulanan</title>
+  <style>
+    :root {
+      --biru: #1e5fa8;
+      --biru2: #2d7dd2;
+      --hijau: #1a9e5c;
+      --merah: #d23b3b;
+      --kuning: #e8a712;
+      --abu: #f4f6f9;
+      --border: #dde3ea;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', system-ui, Arial, sans-serif;
+    }
+    body {
+      background: var(--abu);
+      min-height: 100vh;
+      color: #243342;
+    }
+    /* LOGIN */
+    #loginScreen {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, #16355c, #1e5fa8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 99;
+    }
+    .login-box {
+      background: #fff;
+      border-radius: 16px;
+      padding: 34px 30px;
+      width: 340px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .35);
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+    .login-box h1 {
+      font-size: 21px;
+      color: var(--biru);
+      margin-bottom: 2px;
+    }
+    .login-box p {
+      font-size: 13px;
+      color: #6a7684;
+      margin-bottom: 8px;
+    }
+    .login-box label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #465364;
+    }
+    .login-box input {
+      padding: 10px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
+      font-size: 15px;
+    }
+    .login-box button {
+      margin-top: 10px;
+      padding: 11px;
+      background: var(--biru);
+      color: #fff;
+      border: none;
+      border-radius: 9px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .login-err {
+      display: none;
+      color: var(--merah);
+      font-size: 12.5px;
+      font-weight: 600;
+    }
+    /* APP */
+    #app {
+      display: none;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 18px 16px 60px;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+    header h1 {
+      font-size: 19px;
+      color: var(--biru);
+    }
+    .sub {
+      font-size: 12px;
+      color: #6a7684;
+    }
+    .hbtns {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+    }
+    .hbtns button,
+    .btn-print,
+    .btn-del {
+      padding: 9px 14px;
+      border: none;
+      border-radius: 9px;
+      background: var(--biru);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .hbtns .tambah {
+      background: var(--hijau);
+    }
+    .btn-print {
+      background: var(--biru2);
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 99px;
+      font-size: 11.5px;
+      font-weight: 700;
+      margin-left: 6px;
+      cursor: pointer;
+    }
+    .badge.lokal {
+      background: #e8ecf1;
+      color: #5c6a78;
+    }
+    .badge.pending {
+      background: #fdecd7;
+      color: #b46a10;
+    }
+    .badge.sync {
+      background: #dbeafe;
+      color: #1e5fa8;
+    }
+    .badge.ok {
+      background: #d9f3e5;
+      color: #157a46;
+    }
+    .badge.err {
+      background: #fbdcdc;
+      color: #a92525;
+    }
+    .controls {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .controls input,
+    .controls select {
+      padding: 9px 11px;
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
+      font-size: 14px;
+      background: #fff;
+    }
+    .input-cari {
+      flex: 1;
+      min-width: 200px;
+    }
+    /* STATS */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .stat {
+      background: #fff;
+      border-radius: 12px;
+      padding: 14px 16px;
+      box-shadow: 0 2px 8px rgba(20, 40, 80, .07);
+    }
+    .stat .lbl {
+      font-size: 11.5px;
+      color: #6a7684;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+    }
+    .stat .val {
+      font-size: 23px;
+      font-weight: 800;
+      color: var(--biru);
+      margin-top: 3px;
+    }
+    .stat.b .val { color: var(--hijau); }
+    .stat.d .val { color: var(--kuning); }
+    .stat.e .val { color: var(--merah); }
+    /* MODAL */
+    .modal-ov {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 30, 50, .5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      padding: 16px;
+    }
+    .modal {
+      background: #fff;
+      border-radius: 16px;
+      padding: 24px;
+      width: 480px;
+      max-width: 100%;
+      max-height: 90vh;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+    .modal h2 {
+      font-size: 17px;
+      color: var(--biru);
+      margin-bottom: 4px;
+    }
+    .modal label {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #465364;
+      margin-top: 3px;
+    }
+    .modal input,
+    .modal select {
+      padding: 10px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
+      font-size: 15px;
+      width: 100%;
+    }
+    .row2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .m-actions {
+      display: flex;
+      gap: 9px;
+      justify-content: flex-end;
+      margin-top: 12px;
+    }
+    .m-actions button {
+      padding: 10px 18px;
+      border: none;
+      border-radius: 9px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .m-actions .ghost {
+      background: #eef1f5;
+      color: #465364;
+    }
+    .m-actions .primary {
+      background: var(--biru);
+      color: #fff;
+    }
+    .set-info {
+      background: #eef6ff;
+      border: 1px solid #cfe3fb;
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 12.5px;
+      line-height: 1.7;
+    }
+    .set-info ol {
+      padding-left: 18px;
+    }
+    /* PRINT */
+    .print-head {
+      display: none;
+    }
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printArea,
+      #printArea * {
+        visibility: visible;
+      }
+      #printArea {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        padding: 20px;
+      }
+      .no-print,
+      .controls,
+      header,
+      .tabs {
+        display: none !important;
+      }
+      .print-head {
+        display: block !important;
+        text-align: center;
+        margin-bottom: 18px;
+      }
+      .print-head h2 {
+        color: var(--biru);
+        font-size: 18px;
+      }
+      .tbl-wrap {
+        box-shadow: none !important;
+      }
+    }
+    @media (max-width: 640px) {
+      #app {
+        padding: 12px 10px 60px;
+      }
+      header h1 {
+        font-size: 16px;
+      }
+      .hbtns button {
+        padding: 8px 10px;
+        font-size: 12px;
+      }
+      .row2 {
+        grid-template-columns: 1fr;
+      }
+    }
+    /* ================= SECTIONS & TABEL ================= */
+    .periode-tag {
+      background: #fff;
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-bottom: 14px;
+      font-size: 14px;
+      box-shadow: 0 2px 8px rgba(20, 40, 80, .07);
+    }
+    .section {
+      background: #fff;
+      border-radius: 12px;
+      margin-bottom: 18px;
+      box-shadow: 0 2px 10px rgba(20, 40, 80, .08);
+      overflow: hidden;
+    }
+    .sec-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 14px 16px;
+      background: linear-gradient(90deg, #eaf2fb, #f6faff);
+      border-bottom: 1.5px solid var(--border);
+    }
+    .sec-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--biru);
+    }
+    .sec-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .sec-count {
+      font-size: 12.5px;
+      color: #7b8794;
+    }
+    .btn-print {
+      background: var(--biru);
+      color: #fff;
+      border: none;
+      padding: 7px 14px;
+      border-radius: 7px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-print:hover {
+      background: #174a86;
+    }
+    .tbl-wrap {
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+      min-width: 820px;
+    }
+    th {
+      background: var(--biru);
+      color: #fff;
+      padding: 10px 8px;
+      text-align: left;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .3px;
+      white-space: nowrap;
+    }
+    td {
+      padding: 9px 8px;
+      border-bottom: 1px solid #eef1f5;
+      vertical-align: middle;
+    }
+    tbody tr:hover {
+      background: #f6faff;
+    }
+    td.empty {
+      text-align: center;
+      color: #98a2ae;
+      padding: 22px;
+      font-style: italic;
+    }
+    tfoot td {
+      background: #f0f5fb;
+      border-top: 2px solid var(--biru);
+      font-weight: 700;
+    }
+    .subtot {
+      color: var(--biru);
+    }
+    .act button {
+      border: none;
+      background: #eef2f7;
+      border-radius: 6px;
+      padding: 5px 8px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    .act button.del:hover {
+      background: #fde3e3;
+    }
+    .act button:hover {
+      background: #e0e8f2;
+    }
+    .grand {
+      background: linear-gradient(135deg, #1e5fa8, #2d7dd2);
+      color: #fff;
+      border-radius: 12px;
+      padding: 18px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .grand-l {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: .4px;
+    }
+    .grand-v {
+      font-size: 24px;
+      font-weight: 800;
+    }
+  </style>
+</head>
+<body>
+  <div id="loginScreen">
+    <div class="login-box">
+      <h1>🔧 Laporan Perbaikan</h1>
+      <p>Masuk untuk mengelola laporan bulanan</p>
+      <label>Username</label>
+      <input id="logUser" type="text" placeholder="username" autocomplete="username">
+      <label>Password</label>
+      <input id="logPass" type="password" placeholder="password" autocomplete="current-password">
+      <button onclick="login()">Masuk</button>
+      <div class="login-err" id="logErr">Username atau password salah</div>
+      <p style="margin-top:16px;font-size:11px;color:#a0aab5;">Default: admin / admin123</p>
+    </div>
+  </div>
+  <div id="app" style="display:none">
+    <header>
+      <div>
+        <h1>🔧 Laporan Perbaikan Bulanan</h1>
+        <div class="sub" id="subTitle"></div><span class="badge lokal" id="syncBadge" onclick="openSettings()">⚪
+          Mode Lokal</span>
+      </div>
+      <div class="hbtns">
+        <button class="tambah" onclick="openForm()">+ Tambah Perbaikan</button>
+        <button onclick="printAll()">🖨 Print Semua</button>
+        <button onclick="gantiPass()">🔑 Password</button>
+        <button onclick="openSettings()">⚙ Pengaturan</button>
+        <button onclick="logout()">Keluar</button>
+      </div>
+    </header>
+    <div class="tabs no-print">
+      <button class="tab active" id="tabPerbaikan" onclick="switchTab(0)">🔧 Perbaikan</button>
+      <button class="tab" id="tabBan" onclick="switchTab(1)">♟ Ban</button>
+      <button class="tab" id="tabStok" onclick="switchTab(2)">📦 Stok Barang</button>
+    </div>
+    <main>
+      <div id="viewPerbaikan">
+        <div class="stats" id="stats"></div>
+        <div class="controls">
+          <label style="font-weight:600;font-size:14px;">Bulan:</label>
+          <input type="month" id="filterBulan" onchange="render()">
+          <select id="filterNopol" onchange="render()">
+            <option value="">Semua Nopol</option>
+          </select>
+        </div>
+        <div class="controls">
+          <input type="search" id="filterCari" placeholder="🔍 Cari nama / nopol / keterangan..."
+            oninput="render()" class="input-cari">
+          <button class="btn-print" style="background:#4a5768;" onclick="resetFilter()">✕ Reset</button>
+        </div>
+        <div id="content"></div>
+      </div>
+      <div id="viewBan" style="display:none">
+        <div class="controls">
+          <label style="font-weight:600;font-size:14px;">Bulan:</label>
+          <input type="month" id="banBulan" onchange="renderBan()">
+          <select id="banNopol" onchange="renderBan()">
+            <option value="">Semua Nopol</option>
+          </select>
+          <button class="btn-print" onclick="openBanForm()">+ Tambah Ban</button>
+          <button class="btn-print" style="background:#4a5768;" onclick="printBanSectionAll()">Print Per Nopol</button>
+          <button class="btn-print" style="background:#4a5768;" onclick="printBanAll()">Print Semua</button>
+        </div>
+        <div class="controls">
+          <input type="search" id="banCari" placeholder="🔍 Cari nama / no seri / keterangan..."
+            oninput="renderBan()" class="input-cari">
+          <button class="btn-print" style="background:#4a5768;" onclick="resetBanFilter()">✕ Reset</button>
+        </div>
+        <div id="contentBan"></div>
+      </div>
+      <div id="viewStok" style="display:none">
+        <div class="controls">
+          <label style="font-weight:600;font-size:14px;">Bulan:</label>
+          <input type="month" id="stokBulan" onchange="renderStok()">
+          <button class="btn-print" onclick="openStokForm()">+ Tambah Barang</button>
+          <button class="btn-print" style="background:#4a5768;" onclick="printStokAll()">Print</button>
+        </div>
+        <div class="controls">
+          <input type="search" id="stokCari" placeholder="🔍 Cari nama barang..." oninput="renderStok()" class="input-cari">
+          <button class="btn-print" style="background:#4a5768;" onclick="resetStokFilter()">✕ Reset</button>
+        </div>
+        <div id="contentStok"></div>
+      </div>
+    </main>
+  </div>
+  <script>
+    /* ================= DATA & LOGIN ================= */
+    const NOPOLS = ["K 8331 VK", "N 8919 EU", "M 8591 UA", "M 8466 VD", "M 9490 UA", "L 9107 US", "L 8026 UJ", "S 8697 V"];
+    const LS_DATA = "lp_data", LS_USER = "lp_user";
+    let data = JSON.parse(localStorage.getItem(LS_DATA) || "[]");
+    function save() { localStorage.setItem(LS_DATA, JSON.stringify(data)); }
+    function initUser() { if (!localStorage.getItem(LS_USER)) localStorage.setItem(LS_USER, JSON.stringify({ u: "admin", p: "admin123" })); }
+    /* ====== SINKRONISASI GOOGLE SHEET (antar HP) ====== */
+    const LS_BAN = "lp_ban", LS_STOK = "lp_stok";
+    let ban = JSON.parse(localStorage.getItem(LS_BAN) || "[]");
+    let stok = JSON.parse(localStorage.getItem(LS_STOK) || "[]");
+    function saveBan() { localStorage.setItem(LS_BAN, JSON.stringify(ban)); }
+    function saveStok() { localStorage.setItem(LS_STOK, JSON.stringify(stok)); }
+    const LS_URL = "lp_gas_url", LS_QUEUE = "lp_queue", LS_SYNC = "lp_lastSync";
+    window.HOST_URL = "";/* URL /exec diisi otomatis saat dibuka via Apps Script */
+    let queue = JSON.parse(localStorage.getItem(LS_QUEUE) || "[]");
+    let syncing = false;
+    function gasUrl() { return (localStorage.getItem(LS_URL) || "").trim(); }
+    function saveQueue() { localStorage.setItem(LS_QUEUE, JSON.stringify(queue)); updateSyncBadge(); }
+    function login() {
+      const u = document.getElementById("logUser").value.trim(), p = document.getElementById("logPass").value;
+      const acc = JSON.parse(localStorage.getItem(LS_USER) || '{"u":"admin","p":"admin123"}');
+      if (u === acc.u && p === acc.p) { localStorage.setItem("lp_session", "ok"); showApp(); }
+      else document.getElementById("logErr").style.display = "block";
+    }
+    function logout() { localStorage.removeItem("lp_session"); location.reload(); }
+    document.getElementById("logPass").addEventListener("keydown", e => { if (e.key === "Enter") login(); });
+    function showApp() {
+      document.getElementById("loginScreen").style.display = "none";
+      document.getElementById("app").style.display = "block";
+      if (!gasUrl() && window.HOST_URL && /^https:\/\/script\.google\.com\//.test(window.HOST_URL)) { localStorage.setItem(LS_URL, window.HOST_URL); }
+      const d = new Date();
+      document.getElementById("filterBulan").value = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0");
+      document.getElementById("subTitle").textContent = "Data otomatis tersimpan & tersinkron antar HP";
+      render(); updateSyncBadge();
+      document.getElementById("banBulan").value = document.getElementById("filterBulan").value;
+      document.getElementById("stokBulan").value = document.getElementById("filterBulan").value;
+      if (typeof renderBan === "function") renderBan();
+      if (typeof renderStok === "function") renderStok();
+      if (gasUrl()) trySync(true);
+      if (!window._syncTimer) window._syncTimer = setInterval(() => trySync(true), 60000);
+    }
+    initUser();
+    /* ================= UTIL ================= */
+    function fmtRp(n) { return "Rp " + Number(n || 0).toLocaleString("id-ID"); }
+    function fmtTgl(s) { if (!s) return "-"; const p = s.split("-"); return p[2] + "/" + p[1] + "/" + p[0]; }
+    function esc(s) { return String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+  </script>
+  <script>
+    /* ================= RENDER ================= */
+    const NAMA_BULAN = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+    function filtered() {
+      const bl = document.getElementById("filterBulan").value;
+      const np = document.getElementById("filterNopol").value;
+      const q = (document.getElementById("filterCari").value || "").trim().toLowerCase();
+      // saat mencari, abaikan filter bulan agar pencarian mencakup SEMUA periode
+      return data.filter(r => (q || !bl || (r.tglMasuk || "").startsWith(bl)) && (!np || r.nopol === np)
+        && (!q || [r.nama, r.nopol, r.noseri, r.ket].some(v => String(v || "").toLowerCase().includes(q))));
+    }
+    function resetFilter() {
+      ["filterBulan", "filterNopol", "filterCari"].forEach(id => document.getElementById(id).value = "");
+      render();
+    }
+    function render() {
+      const sel = document.getElementById("filterNopol"), cur = sel.value;
+      sel.innerHTML = '<option value="">Semua Nopol</option>' + NOPOLS.map(n => `<option ${n === cur ? "selected" : ""}>${n}</option>`).join("");
+      const rows = filtered(), bl = document.getElementById("filterBulan").value;
+      const q = (document.getElementById("filterCari").value || "").trim();
+      const lbl = q ? "Semua Periode (hasil pencarian)" : (bl ? NAMA_BULAN[+bl.slice(5, 7) - 1] + " " + bl.slice(0, 4) : "Semua Periode");
+      const totalBiaya = rows.reduce((a, r) => a + ((r.jumlah || 1) * (r.harga || 0)), 0);
+      const totalItem = rows.reduce((a, r) => a + (r.jumlah || 0), 0);
+      const selesai = rows.filter(r => r.tglKeluar).length;
+      const proses = rows.length - selesai;
+      document.getElementById("stats").innerHTML = `
+    <div class="stat"><div class="lbl">Total Perbaikan</div><div class="val">${rows.length}</div></div>
+    <div class="stat b"><div class="lbl">Total Biaya (otomatis)</div><div class="val" style="font-size:17px">${fmtRp(totalBiaya)}</div></div>
+   <div class="stat d"><div class="lbl">Masih Proses</div><div class="val">${proses}</div></div>
+    <div class="stat e"><div class="lbl">Selesai</div><div class="val">${selesai}</div></div>`;
+      let html = `<div class="periode-tag">Periode: <b>${lbl}</b></div>`;
+      let grandTotal = 0;
+      for (const nopol of NOPOLS) {
+        const list = rows.filter(r => r.nopol === nopol).sort((a, b) => (a.tglMasuk || "").localeCompare(b.tglMasuk || ""));
+        const sub = list.reduce((a, r) => a + ((r.jumlah || 1) * (r.harga || 0)), 0);
+        grandTotal += sub;
+        html += renderSection(nopol, list, sub);
+      }
+      html += `<div class="grand">
+    <div class="grand-l">GRAND TOTAL SEMUA KENDARAAN (${lbl})</div>
+    <div class="grand-v">${fmtRp(grandTotal)}</div></div>`;
+      document.getElementById("content").innerHTML = html;
+    }
+    function renderSection(nopol, list, sub) {
+      const sid = "sec-" + nopol.replace(/\s/g, "");
+      const body = list.length ? list.map((r, i) => `
+    <tr>
+      <td>${i + 1}</td>
+      <td>${esc(r.nama)}</td>
+      <td>${fmtTgl(r.tglMasuk)}</td>
+      <td>${fmtRp(r.jumlah * (r.harga || 0))}</td>
+      <td class="no-print act">
+        <button onclick="openForm('${r.id}')">✏</button>
+        <button class="del" onclick="hapus('${r.id}')">🗑</button>
+      </td>
+    </tr>`).join("")
+        : `<tr><td colspan="5" class="empty">Belum ada data perbaikan untuk ${nopol} pada periode ini</td></tr>`;
+      return `
+  <div class="section" id="${sid}">
+    <div class="sec-head">
+      <div class="sec-title">🚚 ${nopol}</div>
+      <div class="sec-right">
+        <span class="sec-count">${list.length} perbaikan</span>
+        <button class="btn-print no-print" onclick="printSection('${sid}')">🖨 Print</button>
+      </div>
+    </div>
+    <div class="tbl-wrap"><table>
+      <thead><tr>
+        <th>No</th><th>Jenis Perbaikan</th><th>Tanggal</th><th>Jumlah (Rp)</th><th class="no-print">Aksi</th>
+      </tr></thead>
+      <tbody>${body}</tbody>
+      <tfoot><tr>
+        <td colspan="2" style="text-align:right;font-weight:800;">SUB TOTAL ${nopol}</td>
+        <td class="subtot" style="font-weight:800;">${fmtRp(sub)}</td>
+        <td colspan="2" class="no-print"></td>
+      </tr></tfoot>
+    </table></div>
+  </div>`;
+    }
+  </script>
+  <script>
+    /* ================= FORM (tambah/edit) ================= */
+    function openForm(id) {
+      closeModal();
+      const r = id ? data.find(x => x.id === id) : null;
+      const ov = document.createElement("div");
+      ov.className = "modal-ov no-print"; ov.id = "modalForm";
+      ov.innerHTML = `
+  <div class="modal">
+    <h2>${r ? "✏ Edit Perbaikan" : "➕ Tambah Perbaikan"}</h2>
+    <label>Nomor Polisi</label>
+    <select id="fNopol">${NOPOLS.map(n => `<option ${r && r.nopol === n ? "selected" : ""}>${n}</option>`).join("")}</select>
+    <label>Nama / Jenis Perbaikan</label>
+    <input id="fNama" placeholder="cth: Ganti kampas rem, Servis rutin..." value="${esc(r ? r.nama : "")}">
+    <div class="row2">
+     <div><label>Harga Satuan (Rp)</label><input id="fHarga" type="number" min="0" value="${r ? r.harga || 0 : 0}"></div>
+    </div>
+    <div class="row2">
+      <div><label>Tanggal Masuk</label><input id="fMasuk" type="date" value="${r ? r.tglMasuk : ""}"></div>
+      <div><label>Tanggal Keluar</label><input id="fKeluar" type="date" value="${r ? r.tglKeluar || "" : ""}"></div>
+    </div>
+    <div class="row2">
+      <div><label>Keterangan</label><input id="fKet" placeholder="opsional" value="${esc(r ? r.ket || "" : "")}"></div>
+      <div><label>Pemasok / Bengkel</label><input id="fSup" placeholder="opsional" value="${esc(r ? r.sup || "" : "")}"></div>
+    </div>
+    <div class="m-actions">
+      <button class="ghost" onclick="closeModal()">Batal</button>
+      <button class="primary" onclick="simpan('${id || ""}')">Simpan</button>
+    </div>
+  </div>`;
+      document.body.appendChild(ov);
+      ov.addEventListener("click", e => { if (e.target === ov) closeModal(); });
+    }
+    function closeModal() { const m = document.getElementById("modalForm"); if (m) m.remove(); }
+    function simpan(id) {
+      const rec = {
+        id: id || ("id" + Date.now()),
+        tipe: "perbaikan",
+        rev: Date.now(),
+        nopol: document.getElementById("fNopol").value,
+        nama: document.getElementById("fNama").value.trim() || "(tanpa nama)",
+        jumlah: 1,
+        harga: +document.getElementById("fHarga").value || 0,
+        tglMasuk: document.getElementById("fMasuk").value,
+        tglKeluar: document.getElementById("fKeluar").value || "",
+        ket: document.getElementById("fKet").value.trim(),
+        sup: document.getElementById("fSup").value.trim()
+      };
+      if (!rec.tglMasuk) { alert("Tanggal masuk wajib diisi"); return; }
+      if (id) { const i = data.findIndex(x => x.id === id); data[i] = rec; }
+      else data.push(rec);
+      save(); closeModal(); render();
+      queue.push({ action: "save", record: rec }); saveQueue(); trySync(true);
+    }
+    function hapus(id) {
+      if (confirm("Hapus data perbaikan ini?")) {
+        data = data.filter(x => x.id !== id); save(); render();
+        queue.push({ action: "save", record: { id: id, tipe: "perbaikan", del: 1, rev: Date.now() } }); saveQueue(); trySync(true);
+      }
+    }
+    /* ================= PRINT ================= */
+    const LOGO_HTML = '';
+    function printSection(secId) {
+      const sec = document.getElementById(secId);
+      const holder = document.createElement("div");
+      holder.id = "printArea";
+      const bl = document.getElementById("filterBulan").value;
+      const lbl = bl ? NAMA_BULAN[+bl.slice(5, 7) - 1] + " " + bl.slice(0, 4) : "Semua Periode";
+      holder.innerHTML = `<div class="print-head">${LOGO_HTML}
+      <h2>LAPORAN PERBAIKAN KENDARAAN</h2>
+      <div>Periode: <b>${lbl}</b></div>
+    </div>`+ sec.innerHTML;
+      document.body.appendChild(holder);
+      document.body.classList.add("printing");
+      window.print();
+      setTimeout(() => { holder.remove(); document.body.classList.remove("printing"); }, 300);
+    }
+    function printAll() {
+      const bl = document.getElementById("filterBulan").value;
+      const lbl = bl ? NAMA_BULAN[+bl.slice(5, 7) - 1] + " " + bl.slice(0, 4) : "Semua Periode";
+      const holder = document.createElement("div");
+      holder.id = "printArea";
+      holder.innerHTML = `<div class="print-head">${LOGO_HTML}<h2>LAPORAN PERBAIKAN KENDARAAN - SEMUA NOPOL</h2><div>Periode: <b>${lbl}</b></div></div>`
+        + document.getElementById("content").innerHTML;
+      document.body.appendChild(holder);
+      document.body.classList.add("printing");
+      window.print();
+      setTimeout(() => { holder.remove(); document.body.classList.remove("printing"); }, 300);
+    }
+    /* ================= GANTI PASSWORD ================= */
+    function gantiPass() {
+      const acc = JSON.parse(localStorage.getItem(LS_USER));
+      const p = prompt("Password baru:", "");
+      if (p && p.trim()) { acc.p = p.trim(); localStorage.setItem(LS_USER, JSON.stringify(acc)); alert("Password berhasil diganti"); }
+    }
+    /* ====== SINKRONISASI: BADGE, JSONP, PULL, SETTINGS ====== */
+    function updateSyncBadge(state) {
+      const b = document.getElementById("syncBadge"); if (!b) return;
+      if (!gasUrl()) { b.textContent = "\u26AA Mode Lokal"; b.className = "badge lokal"; return; }
+      if (state === "sync") { b.textContent = "\uD83D\uDD04 Sinkronisasi..."; b.className = "badge sync"; return; }
+      if (state === "err") { b.textContent = "\u26A0 Gagal sinkron"; b.className = "badge err"; return; }
+      if (queue.length) { b.textContent = "\uD83D\uDFE0 Belum sinkron (" + queue.length + ")"; b.className = "badge pending"; return; }
+      const t = localStorage.getItem(LS_SYNC);
+      b.textContent = "\uD83D\uDFE2 Tersinkron" + (t ? " " + new Date(+t).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }) : "");
+      b.className = "badge ok";
+    }
+    function jsonpUrl(u, params) {
+      return new Promise((resolve, reject) => {
+        const cb = "lpCB" + Date.now() + Math.floor(Math.random() * 10000);
+        const s = document.createElement("script");
+        const timer = setTimeout(() => { clean(); reject(new Error("Timeout, Google tidak merespons")); }, 25000);
+        function clean() { clearTimeout(timer); try { delete window[cb]; } catch (e) { window[cb] = undefined; } if (s.parentNode) s.parentNode.removeChild(s); }
+        window[cb] = function (d) { clean(); resolve(d); };
+        s.onerror = function () { clean(); reject(new Error("Server Google tidak merespons")); };
+        let q = "";
+        for (const k in params) { q += "&" + encodeURIComponent(k) + "=" + encodeURIComponent(params[k]); }
+        s.src = u + "?callback=" + cb + "&t=" + Date.now() + q;
+        document.head.appendChild(s);
+      });
+    }
+    function jsonp(params) { return jsonpUrl(gasUrl(), params); }
+    async function trySync(silent) {
+      const url = gasUrl();
+      if (!url || syncing) return;
+      syncing = true; updateSyncBadge("sync");
+      try {
+        while (queue.length) {
+          const op = queue[0];
+          const r = await jsonp({ action: "save", rec: JSON.stringify(op.record) });
+          if (!r || !r.ok) throw new Error((r && r.msg) || "Server menolak data");
+          queue.shift(); saveQueue();
+        }
+        const j = await jsonp({ action: "pull" });
+        if (j && j.ok && Array.isArray(j.data)) {
+          mergePull(j.data);
+          const ids = new Set(j.data.map(x => String(x.id)));
+          let need = false;
+          for (const arr of [data, ban, stok]) for (const r of arr) {
+            if (!ids.has(String(r.id))) { queue.push({ action: "save", record: r }); need = true; }
+          }
+          if (need) { saveQueue(); setTimeout(() => trySync(silent), 800); }
+          localStorage.setItem(LS_SYNC, String(Date.now()));
+        }
+        updateSyncBadge();
+      } catch (err) {
+        updateSyncBadge("err");
+        if (!silent) alert("Gagal sinkronisasi: " + err.message);
+      } finally { syncing = false; }
+    }
+    function mergePull(server) {
+      let changed = false;
+      for (const s of server) {
+        const isBan = s.tipe === "ban";
+        const arr = isBan ? ban : (s.tipe === "stok" ? stok : data);
+        const i = arr.findIndex(x => x.id === s.id);
+        if (String(s.del) === "1") {
+          if (i > -1) { arr.splice(i, 1); changed = true; }
+          continue;
+        }
+        if (isBan) { s.rev = +s.rev || 0; }
+        else if (s.tipe === "stok") { s.awal = +s.awal || 0; s.masuk = +s.masuk || 0; s.keluar = +s.keluar || 0; s.rev = +s.rev || 0; }
+        else { s.jumlah = +s.jumlah || 0; s.harga = +s.harga || 0; s.rev = +s.rev || 0; }
+        for (const k of ["tglMasuk", "tglKeluar"]) {
+          if (s[k] && !/^\d{4}-\d{2}-\d{2}/.test(s[k])) { const d = new Date(s[k]); if (!isNaN(d)) s[k] = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); else s[k] = ""; }
+        }
+        if (i === -1) { arr.push(s); changed = true; }
+        else if ((+s.rev || 0) > (+arr[i].rev || 0)) { arr[i] = s; changed = true; }
+      }
+      if (changed) { save(); saveBan(); saveStok(); render(); renderBan(); renderStok(); }
+    }
+    function openSettings() {
+      closeModal();
+      const ov = document.createElement("div");
+      ov.className = "modal-ov no-print"; ov.id = "modalForm";
+      ov.innerHTML = `
+  <div class="modal">
+    <h2>\u2699 Pengaturan Sinkronisasi Google Sheet</h2>
+    <div class="set-info">
+      <b>Cara menghubungkan (sekali saja):</b>
+      <ol>
+        <li>Buat Google Sheet baru di <b>sheets.google.com</b></li>
+        <li>Menu <b>Ekstensi &gt; Apps Script</b>, hapus semua kode bawaan</li>
+        <li>Tempel seluruh isi file <b>KODE-GOOGLE-APPS-SCRIPT.txt</b>, simpan (Ctrl+S)</li>
+        <li><b>Deploy &gt; New deployment &gt; Web app</b> - "Execute as: Me", "Who has access: Anyone" - Deploy - izinkan akses</li>
+        <li>Salin URL berakhiran <b>/exec</b>, tempel di bawah, klik <b>Simpan &amp; Sinkron</b></li>
+      </ol>
+      Ulangi langkah 5 di setiap HP (URL-nya sama).
+    </div>
+    <label>URL Web App Apps Script</label>
+    <input id="setUrl" placeholder="https://script.google.com/macros/s/....../exec" value="${esc(gasUrl())}">
+    <div class="m-actions" style="margin-top:14px">
+      <button class="ghost" onclick="testKoneksi()">\uD83D\uDD0C Test Koneksi</button>
+      <button class="ghost" onclick="if(confirm('Hapus URL sinkronisasi? (data lokal tetap ada)')){localStorage.removeItem(LS_URL);closeModal();updateSyncBadge();}">Hapus</button>
+    </div>
+    <div class="m-actions">
+      <button class="ghost" onclick="closeModal()">Tutup</button>
+      <button class="primary" onclick="saveSettings()">Simpan &amp; Sinkron</button>
+    </div>
+  </div>`;
+      document.body.appendChild(ov);
+      ov.addEventListener("click", e => { if (e.target === ov) closeModal(); });
+    }
+    function saveSettings() {
+      const u = document.getElementById("setUrl").value.trim();
+      if (u && !/^https:\/\/script\.google\.com\/macros\/s\//.test(u)) {
+        if (!confirm("URL tidak terlihat seperti URL Apps Script (/exec). Simpan tetap?")) return;
+      }
+      localStorage.setItem(LS_URL, u);
+      closeModal(); updateSyncBadge();
+      if (u) trySync(false);
+    }
+    async function testKoneksi() {
+      const u = document.getElementById("setUrl").value.trim();
+      if (!u) { alert("Isi URL terlebih dahulu"); return; }
+      if (!/^https:\/\/script\.google\.com\/macros\/s\//.test(u)) {
+        alert("URL harus berupa Web App Apps Script, contoh:\nhttps://script.google.com/macros/s/AKfycb.../exec");
+        return;
+      }
+      try {
+        const j = await jsonpUrl(u, { action: "ping" });
+        alert(j && j.ok ? "\u2705 Terhubung! " + (j.msg || "") : "\u274C Respons: " + JSON.stringify(j));
+      } catch (e) { alert("\u274C Gagal terhubung: " + e.message); }
+    }
+    window.addEventListener("load", function () { if (localStorage.getItem("lp_session") === "ok") showApp(); });
+  </script>
+  <style>
+    /* ================= TAB ================= */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .tab {
+      flex: 1;
+      max-width: 220px;
+      padding: 11px;
+      border: none;
+      border-radius: 10px 10px 0 0;
+      background: #dbe1e9;
+      color: #54616f;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .tab.active {
+      background: var(--biru);
+      color: #fff;
+    }
+  </style>
+  <script>
+    /* ================= LAPORAN BAN ================= */
+    function switchTab(i) {
+      document.getElementById("viewPerbaikan").style.display = i === 0 ? "block" : "none";
+      document.getElementById("viewBan").style.display = i === 1 ? "block" : "none";
+      document.getElementById("viewStok").style.display = i === 2 ? "block" : "none";
+      document.getElementById("tabPerbaikan").className = "tab" + (i === 0 ? " active" : "");
+      document.getElementById("tabBan").className = "tab" + (i === 1 ? " active" : "");
+      document.getElementById("tabStok").className = "tab" + (i === 2 ? " active" : "");
+      if (i === 0) render();
+      if (i === 1) { if (typeof renderBan === "function") renderBan(); }
+      if (i === 2) { if (typeof renderStok === "function") renderStok(); }
+    }
+    function banFiltered() {
+      const bl = document.getElementById("banBulan").value;
+      const np = document.getElementById("banNopol").value;
+      const q = (document.getElementById("banCari").value || "").trim().toLowerCase();
+      // saat mencari, abaikan filter bulan agar pencarian mencakup SEMUA periode
+      return ban.filter(r => (q || !bl || (r.tglMasuk || "").startsWith(bl)) && (!np || r.nopol === np)
+        && (!q || [r.nama, r.nopol, r.noseri, r.ket].some(v => String(v || "").toLowerCase().includes(q))));
+    }
+    function resetBanFilter() {
+      ["banBulan", "banNopol", "banCari"].forEach(id => document.getElementById(id).value = "");
+      renderBan();
+    }
+    function renderBan() {
+      const sel = document.getElementById("banNopol"), cur = sel.value;
+      sel.innerHTML = '<option value="">Semua Nopol</option>' + NOPOLS.map(n => `<option ${n === cur ? "selected" : ""}>${n}</option>`).join("");
+      const rows = banFiltered();
+      const lbl = periodeLabel(document.getElementById("banBulan").value);
+      let html = `<div class="periode-tag">Periode: <b>${lbl}</b></div>`;
+      for (const nopol of NOPOLS) {
+        const list = rows.filter(r => r.nopol === nopol).sort((a, b) => (a.tglMasuk || "").localeCompare(b.tglMasuk || ""));
+        html += renderBanSection(nopol, list);
+      }
+      document.getElementById("contentBan").innerHTML = html;
+    }
+    function renderBanSection(nopol, list) {
+      const sid = "ban-" + nopol.replace(/\s/g, "");
+      const body = list.length ? list.map((r, i) => `
+    <tr>
+      <td>${i + 1}</td>
+      <td>${esc(r.nama)}</td>
+      <td>${esc(r.noseri)}</td>
+      <td>${fmtTgl(r.tglMasuk)}</td>
+      <td>${fmtTgl(r.tglKeluar)}</td>
+      <td>${esc(r.ket)}</td>
+      <td class="no-print act">
+        <button onclick="openBanForm('${r.id}')">✏</button>
+        <button class="del" onclick="hapusBan('${r.id}')">🗑</button>
+      </td>
+    </tr>`).join("")
+        : `<tr><td colspan="7" class="empty">Belum ada data ban untuk ${nopol} pada periode ini</td></tr>`;
+      return `
+  <div class="section" id="${sid}">
+    <div class="sec-head">
+      <div class="sec-title">🚚 ${nopol}</div>
+      <div class="sec-right">
+        <span class="sec-count">${list.length} ban</span>
+        <button class="btn-print no-print" onclick="printBanSection('${sid}')">🖨 Print</button>
+      </div>
+    </div>
+    <div class="tbl-wrap"><table>
+      <thead><tr>
+        <th>No</th><th>Nama Ban</th><th>No Seri</th><th>Tgl Masuk</th><th>Tgl Keluar</th><th>Keterangan</th><th class="no-print">Aksi</th>
+      </tr></thead>
+      <tbody>${body}</tbody>
+      <tfoot><tr>
+        <td colspan="6" style="text-align:right;font-weight:800;">JUMLAH BAN ${nopol}</td>
+        <td style="font-weight:800;">${list.length}</td>
+      </tr></tfoot>
+    </table></div>
+  </div>`;
+    }
+    function openBanForm(id) {
+      closeModal();
+      const r = id ? ban.find(x => x.id === id) : null;
+      const ov = document.createElement("div");
+      ov.className = "modal-ov no-print"; ov.id = "modalForm";
+      ov.innerHTML = `
+  <div class="modal">
+    <h2>${r ? "✏ Edit Ban" : "➕ Tambah Ban"}</h2>
+    <label>Nomor Polisi</label>
+    <select id="bNopol">${NOPOLS.map(n => `<option ${r && r.nopol === n ? "selected" : ""}>${n}</option>`).join("")}</select>
+    <label>Nama Ban</label>
+    <input id="bNama" placeholder="cth: Ban depan kanan, Bridgestone..." value="${esc(r ? r.nama : "")}">
+    <label>No Seri Ban</label>
+    <input id="bSeri" placeholder="cth: DOT 3519 ABCD 1234" value="${esc(r ? r.noseri : "")}">
+    <div class="row2">
+      <div><label>Tanggal Masuk</label><input id="bMasuk" type="date" value="${r ? r.tglMasuk : ""}"></div>
+      <div><label>Tanggal Keluar</label><input id="bKeluar" type="date" value="${r ? r.tglKeluar || "" : ""}"></div>
+    </div>
+    <label>Keterangan</label>
+    <input id="bKet" placeholder="cth: aus, bocor, kena paku..." value="${esc(r ? r.ket || "" : "")}">
+    <div class="m-actions">
+      <button class="ghost" onclick="closeModal()">Batal</button>
+      <button class="primary" id="btnSimpanBan">Simpan</button>
+    </div>
+  </div>`;
+      document.body.appendChild(ov);
+      ov.addEventListener("click", e => { if (e.target === ov) closeModal(); });
+      document.getElementById("btnSimpanBan").addEventListener("click", () => simpanBan(id || ""));
+    }
+    function simpanBan(id) {
+      const rec = {
+        id: id || ("ban" + Date.now()),
+        tipe: "ban",
+        rev: Date.now(),
+        nopol: document.getElementById("bNopol").value,
+        nama: document.getElementById("bNama").value.trim() || "(tanpa nama)",
+        noseri: document.getElementById("bSeri").value.trim(),
+        tglMasuk: document.getElementById("bMasuk").value,
+        tglKeluar: document.getElementById("bKeluar").value || "",
+        ket: document.getElementById("bKet").value.trim()
+      };
+      if (!rec.tglMasuk) { alert("Tanggal masuk wajib diisi"); return; }
+      if (id) { const i = ban.findIndex(x => x.id === id); if (i !== -1) ban[i] = rec; else ban.push(rec); }
+      else ban.push(rec);
+      saveBan(); closeModal(); renderBan();
+      queue.push({ action: "save", record: rec }); saveQueue(); trySync(true);
+    }
+    function periodeLabel(v) {
+      return v ? NAMA_BULAN[+v.slice(5, 7) - 1] + " " + v.slice(0, 4) : "Semua Periode";
+    }
+    function printBanSection(secId) {
+      const sec = document.getElementById(secId);
+      if (!sec) return;
+      printSection(`<div class="print-head">${LOGO_HTML}<h2>LAPORAN BAN KENDARAAN</h2><div>Periode: <b>${periodeLabel(document.getElementById("banBulan").value)}</b></div></div>`, sec.outerHTML);
+    }
+    function printBanAll() {
+      printSection(`<div class="print-head">${LOGO_HTML}<h2>LAPORAN BAN KENDARAAN - SEMUA NOPOL</h2><div>Periode: <b>${periodeLabel(document.getElementById("banBulan").value)}</b></div></div>`, document.getElementById("contentBan").innerHTML);
+    }
+    function printBanSectionAll() {
+      const secs = [...document.querySelectorAll("#contentBan .section")]
+        .filter(s => !s.querySelector("td.empty"));
+      if (!secs.length) { alert("Tidak ada data untuk diprint"); return; }
+      printSection(`<div class="print-head">${LOGO_HTML}<h2>LAPORAN BAN KENDARAAN - SEMUA NOPOL</h2><div>Periode: <b>${periodeLabel(document.getElementById("banBulan").value)}</b></div></div>`, secs.map(s => s.outerHTML).join('<div style="page-break-after:always"></div>'));
+    }
+    function printSection(headHtml, bodyHtml) {
+      const holder = document.createElement("div");
+      holder.id = "printArea";
+      holder.innerHTML = headHtml + bodyHtml;
+      document.body.appendChild(holder);
+      document.body.classList.add("printing");
+      let done = false;
+      const cleanup = () => { if (done) return; done = true; holder.remove(); document.body.classList.remove("printing"); window.removeEventListener("afterprint", cleanup); };
+      window.addEventListener("afterprint", cleanup);
+      window.print();
+      setTimeout(cleanup, 3000);
+    }
+    function hapusBan(id) {
+      if (confirm("Hapus data ban ini?")) {
+        ban = ban.filter(x => x.id !== id); saveBan(); renderBan();
+        queue.push({ action: "save", record: { id: id, tipe: "ban", del: 1, rev: Date.now() } }); saveQueue(); trySync(true);
+      }
+    }
+    /* ================= LAPORAN STOK BARANG ================= */
+    function fmtTglStok(v) {
+      if (!v) return "";
+      const m = String(v).match(/^(\d{4})-(\d{2})-(\d{2})/);
+      return m ? m[3] + "/" + m[2] + "/" + m[1] : String(v);
+    }
+    function resetStokFilter() {
+      ["stokBulan", "stokCari"].forEach(id => document.getElementById(id).value = "");
+      renderStok();
+    }
+    function stokFiltered() {
+      const bl = document.getElementById("stokBulan").value;
+      const q = (document.getElementById("stokCari").value || "").trim().toLowerCase();
+      return stok.filter(r => !q || String(r.nama || "").toLowerCase().includes(q));
+    }
+    function renderStok() {
+      const rows = stokFiltered(), bl = document.getElementById("stokBulan").value;
+      const lbl = periodeLabel(bl);
+      let totA = 0, totM = 0, totK = 0, totZ = 0;
+      const list = [...rows].sort((a, b) => String(a.nama || "").localeCompare(String(b.nama || "")));
+      const body = list.length ? list.map((r, i) => {
+        totA += (+r.awal || 0); totM += (+r.masuk || 0); totK += (+r.keluar || 0);
+        const akhir = (+r.awal || 0) + (+r.masuk || 0) - (+r.keluar || 0); totZ += akhir;
+        return `<tr>
+      <td>${i + 1}</td>
+      <td>${esc(r.nama)}</td>
+      <td>${+r.awal || 0}</td>
+      <td>${+r.masuk || 0}</td>
+      <td>${+r.keluar || 0}</td>
+      <td><b>${akhir}</b></td>
+      <td>${esc(r.sat || "")}</td>
+      <td>${esc(fmtTglStok(r.tglMasuk))}</td>
+      <td>${esc(fmtTglStok(r.tglKeluar))}</td>
+      <td class="no-print act">
+        <button onclick="openStokForm('${r.id}')">✏</button>
+        <button class="del" onclick="hapusStok('${r.id}')">🗑</button>
+      </td>
+    </tr>`;
+      }).join("") : `<tr><td colspan="10" class="empty">Belum ada data stok barang pada periode ini</td></tr>`;
+      const tfoot = list.length ? `<tfoot><tr>
+        <td colspan="2" style="text-align:right;font-weight:800;">TOTAL</td>
+        <td style="font-weight:800;">${totA}</td>
+        <td style="font-weight:800;">${totM}</td>
+        <td style="font-weight:800;">${totK}</td>
+        <td style="font-weight:800;">${totZ}</td>
+        <td></td><td></td><td></td><td class="no-print"></td>
+      </tr></tfoot>` : "";
+      document.getElementById("contentStok").innerHTML = `
+  <div class="section" id="secStok">
+    <div class="sec-head">
+      <div class="sec-title">📦 LAPORAN STOK BARANG</div>
+      <div class="sec-right">
+        <span class="sec-count">${list.length} jenis barang</span>
+        <button class="btn-print no-print" onclick="printStokAll()">🖨 Print</button>
+      </div>
+    </div>
+    <div class="tbl-wrap"><table>
+      <thead><tr>
+        <th>No</th><th>Nama Barang</th><th>Stok Awal</th><th>Barang Masuk</th><th>Barang Keluar</th><th>Stok Akhir</th><th>Satuan</th><th>Tanggal Masuk</th><th>Tanggal Keluar</th><th class="no-print">Aksi</th>
+      </tr></thead>
+      <tbody>${body}</tbody>
+      ${tfoot}
+    </table></div>
+  </div>`;
+    }
+    function openStokForm(id) {
+      closeModal();
+      const r = id ? stok.find(x => x.id === id) : null;
+      const ov = document.createElement("div");
+      ov.className = "modal-ov no-print"; ov.id = "modalForm";
+      ov.innerHTML = `
+  <div class="modal">
+    <h2>${r ? "✏ Edit Barang" : "➕ Tambah Barang"}</h2>
+    <label>Nama Barang</label>
+    <input id="sNama" placeholder="cth: Oli Mesin, Kampas Rem..." value="${esc(r ? r.nama : "")}">
+    <div class="row2">
+      <div><label>Stok Awal</label><input id="sAwal" type="number" min="0" value="${r ? +r.awal || 0 : 0}"></div>
+      <div><label>Satuan</label><input id="sSat" placeholder="cth: pcs, liter, box" value="${esc(r ? r.sat || "" : "")}"></div>
+    </div>
+    <div class="row2">
+      <div><label>Barang Masuk</label><input id="sMasuk" type="number" min="0" value="${r ? +r.masuk || 0 : 0}"></div>
+      <div><label>Tanggal Masuk</label><input id="sTglMasuk" type="date" value="${esc(r ? r.tglMasuk || "" : "")}"></div>
+    </div>
+    <div class="row2">
+      <div><label>Barang Keluar</label><input id="sKeluar" type="number" min="0" value="${r ? +r.keluar || 0 : 0}"></div>
+      <div><label>Tanggal Keluar</label><input id="sTglKeluar" type="date" value="${esc(r ? r.tglKeluar || "" : "")}"></div>
+    </div>
+    <div class="m-actions">
+      <button class="ghost" onclick="closeModal()">Batal</button>
+      <button class="primary" id="btnSimpanStok">Simpan</button>
+    </div>
+  </div>`;
+      document.body.appendChild(ov);
+      ov.addEventListener("click", e => { if (e.target === ov) closeModal(); });
+      document.getElementById("btnSimpanStok").addEventListener("click", () => simpanStok(id || ""));
+    }
+    function simpanStok(id) {
+      const rec = {
+        id: id || ("stk" + Date.now()),
+        tipe: "stok",
+        rev: Date.now(),
+        nama: document.getElementById("sNama").value.trim() || "(tanpa nama)",
+        awal: +document.getElementById("sAwal").value || 0,
+        masuk: +document.getElementById("sMasuk").value || 0,
+        keluar: +document.getElementById("sKeluar").value || 0,
+        sat: document.getElementById("sSat").value.trim(),
+        tglMasuk: document.getElementById("sTglMasuk").value || "",
+        tglKeluar: document.getElementById("sTglKeluar").value || ""
+      };
+      if (id) { const i = stok.findIndex(x => x.id === id); if (i !== -1) stok[i] = rec; else stok.push(rec); }
+      else stok.push(rec);
+      saveStok(); closeModal(); renderStok();
+      queue.push({ action: "save", record: rec }); saveQueue(); trySync(true);
+    }
+    function hapusStok(id) {
+      if (confirm("Hapus barang ini dari daftar stok?")) {
+        stok = stok.filter(x => x.id !== id); saveStok(); renderStok();
+        queue.push({ action: "save", record: { id: id, tipe: "stok", del: 1, rev: Date.now() } }); saveQueue(); trySync(true);
+      }
+    }
+    function printStokAll() {
+      if (!document.getElementById("contentStok").innerHTML.trim()) { alert("Tidak ada data untuk diprint"); return; }
+      printSection(`<div class="print-head">${LOGO_HTML}<h2>LAPORAN STOK BARANG</h2><div>Periode: <b>${periodeLabel(document.getElementById("stokBulan").value)}</b></div></div>`, document.getElementById("contentStok").innerHTML);
+    }
+  </script>
+</body>
+
+</html>
